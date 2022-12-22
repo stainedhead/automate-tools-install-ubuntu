@@ -1,0 +1,7 @@
+# .gitignore
+
+# ignore vs code config file
+*.code-workspace
+
+# ignore all logs
+*.log

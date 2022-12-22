@@ -1,129 +1,11 @@
 #!/bin/bash
 
-### //////////////////////////////////////////////////////
-####  methods to support install code ####
-
-print-header () {
-   echo ""
-   echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-   echo "$1"
-   echo ""
-}
-
-start-section () {
-   echo ""
-   echo ">>@ $1 $2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-
-}
-
-is-package-installed () {
-
-  ver="--version"
-  if [[ $2 != '' ]]; then
-    ver=$2
-  fi
-
-  if ! command -v $1 $ver >/dev/null; then
-     return 1
-  fi
-
-  show-version $1 "$ver"
-  return 0
-}
-
-does-app-exist () {
-  if ! which $1 >/dev/null; then
-     return 1
-  fi
-  show-loc $1
-  return 0
-
-}
-
-install () {
-    echo ""
-    echo "!!!!!!!!!!! $1 install start !!!!!!!!!!!!!"
-    echo "exec: sudo snap install $1 $2"
-   
-    sudo snap install $1 $2
-   
-    echo "~~~~~~~~~~~ $1 install end  ~~~~~~~~~~~~~~"
-    echo ""
-}
-
-install-apt () {
-    echo ""
-    echo "!!!!!!!!!!! $1 install start !!!!!!!!!!!!!"
-    echo "exec: sudo apt-get -y install $1 $2"
-    
-    sudo apt-get -y install $1 $2
-    
-    echo "~~~~~~~~~~~ $1 install end  ~~~~~~~~~~~~~~"
-    echo ""
-}
-
-install-gem () {
-    echo ""
-    echo "!!!!!!!!!!! $1 install start !!!!!!!!!!!!!"
-    echo "exec: sudo gem install $1 $2"
-   
-    sudo gem install $1 $2
-
-    echo "~~~~~~~~~~~ $1 install end  ~~~~~~~~~~~~~~"
-    echo ""
-}
-
-install-npm () {
-    echo ""
-    echo "!!!!!!!!!!! $1 install start !!!!!!!!!!!!!"
-    echo "exec: sudo npm -g install $1 $2"
-   
-    sudo npm -g install $1 $2
-
-    echo "~~~~~~~~~~~ $1 install end  ~~~~~~~~~~~~~~"
-    echo ""
-}
-
-
-show-version () {
-
-  ver="--version"
-  if [[ $2 != '' ]]; then
-    ver=$2
-  fi
-  fmt="%-19s%s%-69s\n"
-  version=$($1 $ver 2> /dev/null | head -1)
-
-  printf "$fmt" " $1" ": " "$version"
-  return 0
-
-}
-
-show-loc () {
-
-  fmt="%-19s%s%s\n"
-  printf "$fmt" " $1" ": " "$(which $1)"
-  return 0
-
-}
+source utility-methods.shinc
 
 ### //////////////////////////////////////////////////////
 ### actual code of the script #####
 
-print-header "ensure requirements for installation"
-
-if ! is-package-installed snap ; then
-    echo "**********"
-    echo "snap is required to run this script"
-    echo "     install it before running this script"
-    exit 0
-fi
-
-echo "refreshing snap..."
-sudo snap refresh
-
-echo "updating apt-get..."
-sudo apt-get -y update
+validate-and-refresh-managers
 
 ############################################################
 print-header "checking your development tools"
@@ -363,23 +245,6 @@ if ! does-app-exist zoom-client ; then
 fi
 
 ############################################################
-start-section "DB tools"
-
-if ! is-package-installed mariadb ; then
-    install-apt mariadb-server
-    show-version mariadb
-fi
-
-if ! is-package-installed sqlite3 ; then
-    install-apt sqlite3
-    show-version sqlite3
-fi
-
-if ! is-package-installed sqlitebrowser ; then
-    install-apt sqlitebrowser
-    show-version sqlitebrowser 
-fi
-
 
 print-header "end of install script..."
 
