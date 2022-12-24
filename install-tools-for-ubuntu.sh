@@ -210,6 +210,11 @@ if ! is-package-installed terraform ; then
     show-version terraform
 fi
 
+if ! is-package-installed yarn ; then
+    install-npm yarn
+    show-version yarn
+fi
+
 ############################################################
 start-section "UI tools"
 
